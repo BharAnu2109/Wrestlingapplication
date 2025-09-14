@@ -1,0 +1,177 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Wrestlers</h2>
+      
+      <!-- Search and Filter Controls -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="search">Search Wrestlers</label>
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="search"
+                    [(ngModel)]="searchTerm"
+                    placeholder="Search by name..."
+                    (keyup.enter)="searchWrestlers()">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button"
+                    (click)="searchWrestlers()">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="weightCategory">Weight Category</label>
+                <select 
+                  class="form-control" 
+                  id="weightCategory"
+                  [(ngModel)]="selectedWeightCategory"
+                  (change)="filterByWeightCategory()">
+                  <option value="">All Categories</option>
+                  <option *ngFor="let category of weightCategories" [value]="category">
+                    {{ getDisplayName(category) }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>&nbsp;</label>
+                <div>
+                  <button 
+                    class="btn btn-primary me-2"
+                    routerLink="/wrestlers/new">
+                    <i class="fas fa-plus"></i> Add Wrestler
+                  </button>
+                  <button 
+                    class="btn btn-secondary"
+                    (click)="loadWrestlers()">
+                    <i class="fas fa-refresh"></i> Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <!-- Wrestlers Table -->
+      <div *ngIf="!loading" class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Wrestlers ({{ totalElements }} total)</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Name</th>
+                  <th>Nationality</th>
+                  <th>Weight Category</th>
+                  <th>Club</th>
+                  <th>Record</th>
+                  <th>Points</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let wrestler of wrestlers">
+                  <td>
+                    <strong>{{ wrestler.firstName }} {{ wrestler.lastName }}</strong>
+                    <br>
+                    <small class="text-muted">{{ wrestler.weight }}kg</small>
+                  </td>
+                  <td>{{ wrestler.nationality }}</td>
+                  <td>
+                    <span class="badge bg-info">
+                      {{ getDisplayName(wrestler.weightCategory) }}
+                    </span>
+                  </td>
+                  <td>{{ wrestler.club || '-' }}</td>
+                  <td>
+                    <span class="badge bg-success">{{ wrestler.wins || 0 }}W</span>
+                    <span class="badge bg-danger">{{ wrestler.losses || 0 }}L</span>
+                    <span class="badge bg-warning">{{ wrestler.draws || 0 }}D</span>
+                  </td>
+                  <td>{{ wrestler.totalPoints || 0 }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button 
+                        class="btn btn-outline-primary"
+                        [routerLink]="['/wrestlers', wrestler.id]"
+                        title="View Details">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button 
+                        class="btn btn-outline-secondary"
+                        [routerLink]="['/wrestlers', wrestler.id, 'edit']"
+                        title="Edit">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button 
+                        class="btn btn-outline-danger"
+                        (click)="deleteWrestler(wrestler.id!)"
+                        title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="wrestlers.length === 0">
+                  <td colspan="7" class="text-center py-4 text-muted">
+                    No wrestlers found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <nav *ngIf="totalPages > 1" aria-label="Wrestlers pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 0">
+              Previous
+            </button>
+          </li>
+          
+          <li *ngFor="let page of [].constructor(totalPages); let i = index" 
+              class="page-item" 
+              [class.active]="i === currentPage">
+            <button class="page-link" (click)="goToPage(i)">{{ i + 1 }}</button>
+          </li>
+          
+          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+            <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

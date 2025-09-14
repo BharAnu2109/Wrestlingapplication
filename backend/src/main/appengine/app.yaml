@@ -1,0 +1,16 @@
+runtime: java17
+
+env_variables:
+  SPRING_PROFILES_ACTIVE: prod
+  INSTANCE_CONNECTION_NAME: your-project:your-region:wrestling-db-instance
+  DB_USER: wrestling_user
+  DB_PASS: your-password
+  JWT_SECRET: your-jwt-secret-key-here
+  GCS_BUCKET_NAME: your-wrestling-app-bucket
+  FRONTEND_URL: https://your-frontend-domain.com
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.6
+  target_throughput_utilization: 0.6
