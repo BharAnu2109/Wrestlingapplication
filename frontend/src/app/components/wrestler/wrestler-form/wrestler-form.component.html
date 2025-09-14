@@ -1,0 +1,174 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">
+            <i class="fas fa-user-plus me-2"></i>
+            {{ isEditMode ? 'Edit Wrestler' : 'Add New Wrestler' }}
+          </h4>
+        </div>
+        <div class="card-body">
+          <!-- Error Message -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+
+          <!-- Loading Spinner -->
+          <div *ngIf="loading" class="text-center mb-3">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <form [formGroup]="wrestlerForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="row">
+              <!-- First Name -->
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  id="firstName"
+                  formControlName="firstName"
+                  [class.is-invalid]="wrestlerForm.get('firstName')?.invalid && wrestlerForm.get('firstName')?.touched">
+                <div *ngIf="wrestlerForm.get('firstName')?.invalid && wrestlerForm.get('firstName')?.touched" class="invalid-feedback">
+                  <div *ngIf="wrestlerForm.get('firstName')?.errors?.['required']">First name is required</div>
+                  <div *ngIf="wrestlerForm.get('firstName')?.errors?.['minlength']">First name must be at least 2 characters</div>
+                </div>
+              </div>
+
+              <!-- Last Name -->
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  id="lastName"
+                  formControlName="lastName"
+                  [class.is-invalid]="wrestlerForm.get('lastName')?.invalid && wrestlerForm.get('lastName')?.touched">
+                <div *ngIf="wrestlerForm.get('lastName')?.invalid && wrestlerForm.get('lastName')?.touched" class="invalid-feedback">
+                  <div *ngIf="wrestlerForm.get('lastName')?.errors?.['required']">Last name is required</div>
+                  <div *ngIf="wrestlerForm.get('lastName')?.errors?.['minlength']">Last name must be at least 2 characters</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Date of Birth -->
+              <div class="col-md-6 mb-3">
+                <label for="dateOfBirth" class="form-label">Date of Birth *</label>
+                <input 
+                  type="date" 
+                  class="form-control"
+                  id="dateOfBirth"
+                  formControlName="dateOfBirth"
+                  [class.is-invalid]="wrestlerForm.get('dateOfBirth')?.invalid && wrestlerForm.get('dateOfBirth')?.touched">
+                <div *ngIf="wrestlerForm.get('dateOfBirth')?.invalid && wrestlerForm.get('dateOfBirth')?.touched" class="invalid-feedback">
+                  Date of birth is required
+                </div>
+              </div>
+
+              <!-- Nationality -->
+              <div class="col-md-6 mb-3">
+                <label for="nationality" class="form-label">Nationality *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  id="nationality"
+                  formControlName="nationality"
+                  placeholder="e.g., USA, Canada, Japan"
+                  [class.is-invalid]="wrestlerForm.get('nationality')?.invalid && wrestlerForm.get('nationality')?.touched">
+                <div *ngIf="wrestlerForm.get('nationality')?.invalid && wrestlerForm.get('nationality')?.touched" class="invalid-feedback">
+                  <div *ngIf="wrestlerForm.get('nationality')?.errors?.['required']">Nationality is required</div>
+                  <div *ngIf="wrestlerForm.get('nationality')?.errors?.['minlength']">Nationality must be at least 2 characters</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Weight -->
+              <div class="col-md-6 mb-3">
+                <label for="weight" class="form-label">Weight (kg) *</label>
+                <input 
+                  type="number" 
+                  class="form-control"
+                  id="weight"
+                  formControlName="weight"
+                  step="0.1"
+                  min="30"
+                  max="200"
+                  [class.is-invalid]="wrestlerForm.get('weight')?.invalid && wrestlerForm.get('weight')?.touched">
+                <div *ngIf="wrestlerForm.get('weight')?.invalid && wrestlerForm.get('weight')?.touched" class="invalid-feedback">
+                  <div *ngIf="wrestlerForm.get('weight')?.errors?.['required']">Weight is required</div>
+                  <div *ngIf="wrestlerForm.get('weight')?.errors?.['min']">Weight must be at least 30 kg</div>
+                  <div *ngIf="wrestlerForm.get('weight')?.errors?.['max']">Weight must be at most 200 kg</div>
+                </div>
+              </div>
+
+              <!-- Weight Category -->
+              <div class="col-md-6 mb-3">
+                <label for="weightCategory" class="form-label">Weight Category *</label>
+                <select 
+                  class="form-control"
+                  id="weightCategory"
+                  formControlName="weightCategory"
+                  [class.is-invalid]="wrestlerForm.get('weightCategory')?.invalid && wrestlerForm.get('weightCategory')?.touched">
+                  <option value="">Select Weight Category</option>
+                  <option *ngFor="let category of weightCategories" [value]="category">
+                    {{ getDisplayName(category) }}
+                  </option>
+                </select>
+                <div *ngIf="wrestlerForm.get('weightCategory')?.invalid && wrestlerForm.get('weightCategory')?.touched" class="invalid-feedback">
+                  Weight category is required
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Club -->
+              <div class="col-md-6 mb-3">
+                <label for="club" class="form-label">Club</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  id="club"
+                  formControlName="club"
+                  placeholder="Wrestling club or team">
+              </div>
+
+              <!-- Coach -->
+              <div class="col-md-6 mb-3">
+                <label for="coach" class="form-label">Coach</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  id="coach"
+                  formControlName="coach"
+                  placeholder="Coach name">
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button 
+                type="button" 
+                class="btn btn-secondary me-md-2"
+                (click)="onCancel()">
+                <i class="fas fa-times me-1"></i>
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="loading || wrestlerForm.invalid">
+                <i class="fas fa-save me-1"></i>
+                {{ isEditMode ? 'Update Wrestler' : 'Create Wrestler' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
